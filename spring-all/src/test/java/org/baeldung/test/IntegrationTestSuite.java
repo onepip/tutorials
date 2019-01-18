@@ -1,22 +1,22 @@
 package org.baeldung.test;
 
-import org.baeldung.properties.core.ExternalPropertiesWithJavaIntegrationTest;
-import org.baeldung.properties.core.ExternalPropertiesWithMultipleXmlsIntegrationTest;
-import org.baeldung.properties.core.ExternalPropertiesWithXmlIntegrationTest;
-import org.baeldung.properties.core.PropertiesWithJavaIntegrationTest;
-import org.baeldung.properties.core.PropertiesWithMultipleXmlsIntegrationTest;
-import org.baeldung.properties.core.PropertiesWithXmlIntegrationTest;
+import org.baeldung.properties.basic.ExtendedPropertiesWithJavaIntegrationTest;
+import org.baeldung.properties.basic.PropertiesWithMultipleXmlsIntegrationTest;
+import org.baeldung.properties.basic.PropertiesWithXmlIntegrationTest;
+import org.baeldung.properties.external.ExternalPropertiesWithJavaIntegrationTest;
+import org.baeldung.properties.external.ExternalPropertiesWithMultipleXmlsIntegrationTest;
+import org.baeldung.properties.external.ExternalPropertiesWithXmlManualTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({//@formatter:off
+@SuiteClasses({ //@formatter:off
     PropertiesWithXmlIntegrationTest.class,
     ExternalPropertiesWithJavaIntegrationTest.class,
     ExternalPropertiesWithMultipleXmlsIntegrationTest.class,
-    ExternalPropertiesWithXmlIntegrationTest.class,
-    PropertiesWithJavaIntegrationTest.class,
+    ExternalPropertiesWithXmlManualTest.class,
+    ExtendedPropertiesWithJavaIntegrationTest.class,
     PropertiesWithMultipleXmlsIntegrationTest.class,
 })// @formatter:on
 public final class IntegrationTestSuite {

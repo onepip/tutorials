@@ -1,27 +1,26 @@
 package org.baeldung.httpclient.rare;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 public class HttpClientUnshortenLiveTest {
 
@@ -52,7 +51,7 @@ public class HttpClientUnshortenLiveTest {
 
     // API
 
-    final String expand(final String urlArg) throws IOException {
+    private String expand(final String urlArg) throws IOException {
         String originalUrl = urlArg;
         String newUrl = expandSingleLevel(originalUrl);
         while (!originalUrl.equals(newUrl)) {
@@ -81,13 +80,13 @@ public class HttpClientUnshortenLiveTest {
         return newUrl;
     }
 
-    final Pair<Integer, String> expandSingleLevelSafe(final String url) throws IOException {
-        HttpGet request = null;
+    private Pair<Integer, String> expandSingleLevelSafe(final String url) throws IOException {
+        HttpHead request = null;
         HttpEntity httpEntity = null;
         InputStream entityContentStream = null;
 
         try {
-            request = new HttpGet(url);
+            request = new HttpHead(url);
             final HttpResponse httpResponse = client.execute(request);
 
             httpEntity = httpResponse.getEntity();
@@ -95,15 +94,15 @@ public class HttpClientUnshortenLiveTest {
 
             final int statusCode = httpResponse.getStatusLine().getStatusCode();
             if (statusCode != 301 && statusCode != 302) {
-                return new ImmutablePair<Integer, String>(statusCode, url);
+                return new ImmutablePair<>(statusCode, url);
             }
             final Header[] headers = httpResponse.getHeaders(HttpHeaders.LOCATION);
             Preconditions.checkState(headers.length == 1);
             final String newUrl = headers[0].getValue();
 
-            return new ImmutablePair<Integer, String>(statusCode, newUrl);
+            return new ImmutablePair<>(statusCode, newUrl);
         } catch (final IllegalArgumentException uriEx) {
-            return new ImmutablePair<Integer, String>(500, url);
+            return new ImmutablePair<>(500, url);
         } finally {
             if (request != null) {
                 request.releaseConnection();
@@ -117,17 +116,12 @@ public class HttpClientUnshortenLiveTest {
         }
     }
 
-    final String expandSingleLevel(final String url) throws IOException {
-        HttpGet request = null;
-        HttpEntity httpEntity = null;
-        InputStream entityContentStream = null;
+    private String expandSingleLevel(final String url) throws IOException {
+        HttpHead request = null;
 
         try {
-            request = new HttpGet(url);
+            request = new HttpHead(url);
             final HttpResponse httpResponse = client.execute(request);
-
-            httpEntity = httpResponse.getEntity();
-            entityContentStream = httpEntity.getContent();
 
             final int statusCode = httpResponse.getStatusLine().getStatusCode();
             if (statusCode != 301 && statusCode != 302) {
@@ -135,20 +129,13 @@ public class HttpClientUnshortenLiveTest {
             }
             final Header[] headers = httpResponse.getHeaders(HttpHeaders.LOCATION);
             Preconditions.checkState(headers.length == 1);
-            final String newUrl = headers[0].getValue();
 
-            return newUrl;
+            return headers[0].getValue();
         } catch (final IllegalArgumentException uriEx) {
             return url;
         } finally {
             if (request != null) {
                 request.releaseConnection();
-            }
-            if (entityContentStream != null) {
-                entityContentStream.close();
-            }
-            if (httpEntity != null) {
-                EntityUtils.consume(httpEntity);
             }
         }
     }

@@ -2,10 +2,15 @@ package org.baeldung.persistence.model;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.Size;
+
 public class Foo implements Serializable {
+
+    private static final long serialVersionUID = -5422285893276747592L;
 
     private long id;
 
+    @Size(min = 5, max = 14)
     private String name;
 
     public Foo() {
